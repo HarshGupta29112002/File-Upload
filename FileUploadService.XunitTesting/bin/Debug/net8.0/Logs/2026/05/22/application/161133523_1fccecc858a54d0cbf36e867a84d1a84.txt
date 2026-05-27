@@ -1,0 +1,12 @@
+
+Time:          5/22/2026 4:11:33 PM
+CorrelationId: 0D279BF629FF
+Message:       Request started
+Path:          /api/files/FILE-20260516-KAALU1
+Method:        DELETE
+
+Time:          5/22/2026 4:11:33 PM
+CorrelationId: 0D279BF629FF
+Message:       Request completed
+StatusCode:    405
+Path:          /api/files/FILE-20260516-KAALU1

@@ -1,0 +1,12 @@
+
+Time:          5/22/2026 4:11:33 PM
+CorrelationId: 20E6FDFB1C12
+Message:       Request started
+Path:          /api/files/FILE-ERR-001
+Method:        GET
+
+Time:          5/22/2026 4:11:33 PM
+CorrelationId: 20E6FDFB1C12
+Message:       Request failed with exception
+Error:         PostgreSQL connection refused
+Path:          /api/files/FILE-ERR-001

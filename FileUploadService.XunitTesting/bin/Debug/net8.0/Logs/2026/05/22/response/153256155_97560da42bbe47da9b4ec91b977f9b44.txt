@@ -1,0 +1,6 @@
+
+Time:          5/22/2026 3:32:56 PM
+CorrelationId: BB7C6C59CCAF
+StatusCode:    201
+Path:          /api/files/upload
+Response:      {"success":true,"message":"File uploaded successfully.","data":{"referenceId":"FILE-20260519-UP004","originalFilename":"test-file.pdf","contentType":"application/pdf","fileSizeBytes":1024,"createdAt":"2026-05-22T10:02:56.1534559Z"}}

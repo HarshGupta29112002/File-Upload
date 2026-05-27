@@ -1,0 +1,6 @@
+
+Time:          5/22/2026 3:32:55 PM
+CorrelationId: 2ACAD3BD5372
+StatusCode:    201
+Path:          /api/files/upload
+Response:      {"success":true,"message":"File uploaded successfully.","data":{"referenceId":"FILE-20260516-BDD01","originalFilename":"report.pdf","contentType":"application/pdf","fileSizeBytes":1024,"createdAt":"2026-05-22T10:02:55.9501746Z"}}

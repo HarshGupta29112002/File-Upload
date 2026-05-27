@@ -1,0 +1,12 @@
+
+Time:          5/22/2026 4:11:02 PM
+CorrelationId: 63A2FAE77646
+Message:       Request started
+Path:          /api/files/upload
+Method:        POST
+
+Time:          5/22/2026 4:11:02 PM
+CorrelationId: 63A2FAE77646
+Message:       Request failed with exception
+Error:         unexpected error
+Path:          /api/files/upload

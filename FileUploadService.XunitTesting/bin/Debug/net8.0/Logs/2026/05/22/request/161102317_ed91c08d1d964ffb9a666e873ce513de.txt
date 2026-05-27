@@ -1,0 +1,8 @@
+
+Time:          5/22/2026 4:11:02 PM
+CorrelationId: CACB211EC2F9
+Method:        POST
+Path:          /api/files/upload
+QueryString:   
+ContentType:   multipart/form-data; boundary="12cc22f2-b4de-4917-9ab0-12d1e471b359"
+Body:          (multipart/form-data - body not logged)

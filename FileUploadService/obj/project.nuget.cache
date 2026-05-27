@@ -1,0 +1,40 @@
+{
+  "version": 2,
+  "dgSpecHash": "1FbagcoSNEk=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\harsh.gupta\\Downloads\\FileUploadService_Main\\FileUploadService\\FileUploadService\\FileUploadService.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\dapper\\2.1.72\\dapper.2.1.72.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\microsoft.extensions.apidescription.server\\8.0.0\\microsoft.extensions.apidescription.server.8.0.0.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\microsoft.openapi\\2.4.1\\microsoft.openapi.2.4.1.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\mime-detective\\23.6.1\\mime-detective.23.6.1.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\nclam\\9.0.0\\nclam.9.0.0.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\npgsql\\10.0.2\\npgsql.10.0.2.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\swashbuckle.aspnetcore\\10.1.7\\swashbuckle.aspnetcore.10.1.7.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\10.1.7\\swashbuckle.aspnetcore.swagger.10.1.7.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\10.1.7\\swashbuckle.aspnetcore.swaggergen.10.1.7.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\10.1.7\\swashbuckle.aspnetcore.swaggerui.10.1.7.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\system.diagnostics.diagnosticsource\\9.0.11\\system.diagnostics.diagnosticsource.9.0.11.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\system.text.json\\8.0.5\\system.text.json.8.0.5.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.26\\microsoft.windowsdesktop.app.ref.8.0.26.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.26\\microsoft.netcore.app.ref.8.0.26.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.26\\microsoft.aspnetcore.app.ref.8.0.26.nupkg.sha512",
+    "C:\\Users\\harsh.gupta\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.26\\microsoft.netcore.app.host.win-x64.8.0.26.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "message": "FileUploadService depends on Mime-Detective (>= 23.1.1) but Mime-Detective 23.1.1 was not found. Mime-Detective 23.6.1 was resolved instead.",
+      "projectPath": "C:\\Users\\harsh.gupta\\Downloads\\FileUploadService_Main\\FileUploadService\\FileUploadService\\FileUploadService.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\harsh.gupta\\Downloads\\FileUploadService_Main\\FileUploadService\\FileUploadService\\FileUploadService.csproj",
+      "libraryId": "Mime-Detective",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
+}

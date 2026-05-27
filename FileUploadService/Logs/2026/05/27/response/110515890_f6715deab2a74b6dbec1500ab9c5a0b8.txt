@@ -1,0 +1,6 @@
+
+Time:          5/27/2026 11:53:23 AM
+CorrelationId: 5B42F80368B9
+StatusCode:    201
+Path:          /api/files/upload
+Response:      {"success":true,"message":"File uploaded successfully.","data":{"referenceId":"FILE-20260527-277759","originalFilename":"MBVV05261000700_Reciept.pdf","contentType":"application/pdf","fileSizeBytes":63100,"createdAt":"2026-05-27T06:18:49.4556631Z"}}

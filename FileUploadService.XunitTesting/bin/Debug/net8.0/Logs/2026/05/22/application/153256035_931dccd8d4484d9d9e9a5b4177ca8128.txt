@@ -1,0 +1,12 @@
+
+Time:          5/22/2026 3:32:56 PM
+CorrelationId: D206C65BB806
+Message:       Request started
+Path:          /api/files/FILE-ERR-001
+Method:        GET
+
+Time:          5/22/2026 3:32:56 PM
+CorrelationId: D206C65BB806
+Message:       Request failed with exception
+Error:         database blew up
+Path:          /api/files/FILE-ERR-001

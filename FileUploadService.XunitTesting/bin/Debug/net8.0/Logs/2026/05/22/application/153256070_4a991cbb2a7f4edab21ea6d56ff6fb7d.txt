@@ -1,0 +1,12 @@
+
+Time:          5/22/2026 3:32:56 PM
+CorrelationId: 52BF0BB07C1E
+Message:       Request started
+Path:          /api/files/NO-EXIST-123
+Method:        GET
+
+Time:          5/22/2026 3:32:56 PM
+CorrelationId: 52BF0BB07C1E
+Message:       Request completed
+StatusCode:    404
+Path:          /api/files/NO-EXIST-123

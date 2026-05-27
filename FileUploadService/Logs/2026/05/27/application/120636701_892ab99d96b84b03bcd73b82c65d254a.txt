@@ -1,0 +1,12 @@
+
+Time:          5/27/2026 12:06:36 PM
+CorrelationId: 7E52A2672980
+Message:       Request started
+Path:          /api/files/FILE-20260527-277759/metadata
+Method:        GET
+
+Time:          5/27/2026 12:07:04 PM
+CorrelationId: 7E52A2672980
+Message:       Request completed
+StatusCode:    200
+Path:          /api/files/FILE-20260527-277759/metadata

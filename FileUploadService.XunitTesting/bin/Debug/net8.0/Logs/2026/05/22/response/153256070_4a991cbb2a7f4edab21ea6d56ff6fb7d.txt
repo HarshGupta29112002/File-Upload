@@ -1,0 +1,6 @@
+
+Time:          5/22/2026 3:32:56 PM
+CorrelationId: 52BF0BB07C1E
+StatusCode:    404
+Path:          /api/files/NO-EXIST-123
+Response:      {"success":false,"message":"File with reference ID 'NO-EXIST-123' was not found."}

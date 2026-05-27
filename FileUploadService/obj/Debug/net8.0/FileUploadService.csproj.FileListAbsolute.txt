@@ -1,0 +1,81 @@
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\appsettings.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.staticwebassets.endpoints.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.exe
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.deps.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.runtimeconfig.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.pdb
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\Dapper.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\MimeDetective.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\nClam.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\Npgsql.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\bin\Debug\net8.0\System.Diagnostics.DiagnosticSource.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.csproj.AssemblyReference.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.AssemblyInfoInputs.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.AssemblyInfo.cs
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.csproj.CoreCompileInputs.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\rjimswa.dswa.cache.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\scopedcss\bundle\FileUploadService.styles.css
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.build.json.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\swae.build.ex.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUplo.B76124C8.Up2Date
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\refint\FileUploadService.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.pdb
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.genruntimeconfig.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Restructured (1)\FileUploadService\FileUploadService\obj\Debug\net8.0\ref\FileUploadService.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\appsettings.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.staticwebassets.endpoints.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.exe
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.deps.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.runtimeconfig.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.pdb
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\Dapper.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\MimeDetective.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\nClam.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\Npgsql.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\bin\Debug\net8.0\System.Diagnostics.DiagnosticSource.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.csproj.AssemblyReference.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.AssemblyInfoInputs.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.AssemblyInfo.cs
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.csproj.CoreCompileInputs.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\rjimswa.dswa.cache.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\scopedcss\bundle\FileUploadService.styles.css
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.build.json.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\swae.build.ex.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUplo.B76124C8.Up2Date
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\refint\FileUploadService.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.pdb
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.genruntimeconfig.cache
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\ref\FileUploadService.dll
+C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

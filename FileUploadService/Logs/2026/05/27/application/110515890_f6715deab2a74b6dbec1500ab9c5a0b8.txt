@@ -1,0 +1,12 @@
+
+Time:          5/27/2026 11:05:15 AM
+CorrelationId: 5B42F80368B9
+Message:       Request started
+Path:          /api/files/upload
+Method:        POST
+
+Time:          5/27/2026 11:59:30 AM
+CorrelationId: 5B42F80368B9
+Message:       Request completed
+StatusCode:    201
+Path:          /api/files/upload

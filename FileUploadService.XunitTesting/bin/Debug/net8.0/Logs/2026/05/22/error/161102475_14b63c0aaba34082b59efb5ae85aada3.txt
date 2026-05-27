@@ -1,0 +1,7 @@
+
+Time:          5/22/2026 4:11:02 PM
+CorrelationId: 4794E3596E1D
+Message:       HTTP Error
+StatusCode:    404
+Path:          /api/files/FILE-META-001/metadata
+Response:      {"success":false,"message":"File with reference ID 'FILE-META-001' was not found."}

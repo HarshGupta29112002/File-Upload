@@ -1,0 +1,34 @@
+
+Time:          5/26/2026 6:00:43 PM
+CorrelationId: 013F1EBBD6EC
+Message:       Exception occurred
+Error:         42601: INSERT has more target columns than expressions
+
+POSITION: 182
+Path:          /api/files/upload
+StackTrace:       at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)
+   at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 663
+   at FileUploadService.Application.Implementation.FileService.SaveMetadataAsync(FileMetadata metadata) in C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\Application\Implementation\FileService.cs:line 235
+   at FileUploadService.Application.Implementation.FileService.SaveMetadataAsync(FileMetadata metadata) in C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\Application\Implementation\FileService.cs:line 248
+   at FileUploadService.Application.Implementation.FileService.UploadFileAsync(IFormFile file, String uploadedBy) in C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\Application\Implementation\FileService.cs:line 133
+   at FileUploadService.Application.Implementation.FileService.UploadFileAsync(IFormFile file, String uploadedBy) in C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\Application\Implementation\FileService.cs:line 135
+   at FileUploadService.Controllers.FilesController.UploadFile(FileUploadRequest request) in C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\Controllers\FilesController.cs:line 33
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at FileUploadService.Middleware.RequestLoggingMiddleware.InvokeAsync(HttpContext context) in C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\Middleware\RequestLoggingMiddleware.cs:line 97

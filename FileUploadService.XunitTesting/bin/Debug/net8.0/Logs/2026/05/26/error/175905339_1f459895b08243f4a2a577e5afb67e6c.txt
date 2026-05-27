@@ -1,0 +1,7 @@
+
+Time:          5/26/2026 5:59:05 PM
+CorrelationId: 47D79D19880D
+Message:       HTTP Error
+StatusCode:    404
+Path:          /api/files/FILE-NOTFOUND-000
+Response:      {"success":false,"message":"File with reference ID 'FILE-NOTFOUND-000' was not found."}

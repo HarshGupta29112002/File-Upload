@@ -1,0 +1,6 @@
+
+Time:          5/22/2026 4:11:33 PM
+CorrelationId: C53935AA2777
+StatusCode:    404
+Path:          /api/files/FILE-NOTFOUND-000
+Response:      {"success":false,"message":"File with reference ID 'FILE-NOTFOUND-000' was not found."}

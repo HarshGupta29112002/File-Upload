@@ -1,0 +1,6 @@
+
+Time:          5/26/2026 4:40:10 PM
+CorrelationId: 3E8FDA5EBF33
+StatusCode:    201
+Path:          /api/files/upload
+Response:      {"success":true,"message":"File uploaded successfully.","data":{"referenceId":"FILE-20260526-217A3D","originalFilename":"PostgreSQL Evaluation Checklist.pdf","contentType":"application/pdf","fileSizeBytes":207983,"createdAt":"2026-05-26T11:10:10.1667756Z"}}

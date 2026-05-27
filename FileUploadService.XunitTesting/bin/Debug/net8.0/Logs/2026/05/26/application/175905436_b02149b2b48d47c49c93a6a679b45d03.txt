@@ -1,0 +1,12 @@
+
+Time:          5/26/2026 5:59:05 PM
+CorrelationId: BC8F2574B892
+Message:       Request started
+Path:          /api/files/upload
+Method:        POST
+
+Time:          5/26/2026 5:59:05 PM
+CorrelationId: BC8F2574B892
+Message:       Request failed with exception
+Error:         Virus detected: Win.Test.EICAR_HDB-1
+Path:          /api/files/upload

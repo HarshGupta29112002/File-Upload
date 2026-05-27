@@ -1,0 +1,7 @@
+
+Time:          5/22/2026 4:11:33 PM
+CorrelationId: F04FBDDE0262
+Message:       HTTP Error
+StatusCode:    404
+Path:          /api/files/NOPE-999/metadata
+Response:      {"success":false,"message":"File with reference ID 'NOPE-999' was not found."}

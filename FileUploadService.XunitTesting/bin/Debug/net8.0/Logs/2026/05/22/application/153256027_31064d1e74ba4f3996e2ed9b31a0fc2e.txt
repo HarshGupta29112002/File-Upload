@@ -1,0 +1,12 @@
+
+Time:          5/22/2026 3:32:56 PM
+CorrelationId: 601C06BE28AA
+Message:       Request started
+Path:          /api/files/upload
+Method:        POST
+
+Time:          5/22/2026 3:32:56 PM
+CorrelationId: 601C06BE28AA
+Message:       Request failed with exception
+Error:         ClamAV not responding
+Path:          /api/files/upload

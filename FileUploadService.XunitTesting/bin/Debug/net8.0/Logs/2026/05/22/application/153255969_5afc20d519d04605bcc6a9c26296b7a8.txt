@@ -1,0 +1,12 @@
+
+Time:          5/22/2026 3:32:55 PM
+CorrelationId: C13C2C9CEB8D
+Message:       Request started
+Path:          /api/files/FILE-META-001/metadata
+Method:        GET
+
+Time:          5/22/2026 3:32:55 PM
+CorrelationId: C13C2C9CEB8D
+Message:       Request completed
+StatusCode:    404
+Path:          /api/files/FILE-META-001/metadata

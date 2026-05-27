@@ -1,0 +1,6 @@
+
+Time:          5/22/2026 4:11:02 PM
+CorrelationId: BDA1315096A5
+StatusCode:    404
+Path:          /api/files/NOPE-999/metadata
+Response:      {"success":false,"message":"File with reference ID 'NOPE-999' was not found."}
