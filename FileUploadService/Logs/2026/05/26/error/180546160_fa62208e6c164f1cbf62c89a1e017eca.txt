@@ -1,7 +1,0 @@
-
-Time:          5/26/2026 6:05:46 PM
-CorrelationId: 593D116C7F42
-Message:       HTTP Error
-StatusCode:    404
-Path:          /api/files/FILE-20260526-2C5BD2
-Response:      {"success":false,"message":"File with reference ID 'FILE-20260526-2C5BD2' was not found or is already deleted."}

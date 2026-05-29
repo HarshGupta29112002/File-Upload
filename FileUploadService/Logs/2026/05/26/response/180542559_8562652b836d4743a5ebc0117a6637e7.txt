@@ -1,6 +1,0 @@
-
-Time:          5/26/2026 6:05:42 PM
-CorrelationId: A429F59773E3
-StatusCode:    200
-Path:          /api/files/FILE-20260526-2C5BD2
-Response:      {"success":true,"message":"File 'FILE-20260526-2C5BD2' has been deleted."}

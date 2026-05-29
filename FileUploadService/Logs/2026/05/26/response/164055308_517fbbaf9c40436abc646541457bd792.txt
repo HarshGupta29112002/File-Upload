@@ -1,6 +1,0 @@
-
-Time:          5/26/2026 4:40:55 PM
-CorrelationId: 9D4B80572382
-StatusCode:    200
-Path:          /api/files/FILE-20260526-217A3D/metadata
-Response:      {"success":true,"data":{"referenceId":"FILE-20260526-217A3D","originalFilename":"PostgreSQL Evaluation Checklist.pdf","contentType":"application/pdf","fileSize":207983,"createdAt":"2026-05-26T16:40:10.166775"}}

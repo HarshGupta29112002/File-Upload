@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1FbagcoSNEk=",
+  "dgSpecHash": "e8e/1cAokCo=",
   "success": true,
-  "projectFilePath": "C:\\Users\\harsh.gupta\\Downloads\\FileUploadService_Main\\FileUploadService\\FileUploadService\\FileUploadService.csproj",
+  "projectFilePath": "C:\\Users\\harsh.gupta\\Desktop\\FileUploadService\\FileUploadService\\FileUploadService.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\harsh.gupta\\.nuget\\packages\\dapper\\2.1.72\\dapper.2.1.72.nupkg.sha512",
     "C:\\Users\\harsh.gupta\\.nuget\\packages\\microsoft.extensions.apidescription.server\\8.0.0\\microsoft.extensions.apidescription.server.8.0.0.nupkg.sha512",
@@ -28,9 +28,9 @@
       "code": "NU1603",
       "level": "Warning",
       "message": "FileUploadService depends on Mime-Detective (>= 23.1.1) but Mime-Detective 23.1.1 was not found. Mime-Detective 23.6.1 was resolved instead.",
-      "projectPath": "C:\\Users\\harsh.gupta\\Downloads\\FileUploadService_Main\\FileUploadService\\FileUploadService\\FileUploadService.csproj",
+      "projectPath": "C:\\Users\\harsh.gupta\\Desktop\\FileUploadService\\FileUploadService\\FileUploadService.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\harsh.gupta\\Downloads\\FileUploadService_Main\\FileUploadService\\FileUploadService\\FileUploadService.csproj",
+      "filePath": "C:\\Users\\harsh.gupta\\Desktop\\FileUploadService\\FileUploadService\\FileUploadService.csproj",
       "libraryId": "Mime-Detective",
       "targetGraphs": [
         "net8.0"
