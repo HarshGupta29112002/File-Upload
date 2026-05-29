@@ -17,7 +17,7 @@ public class FileMetadata
     public DateTime CreatedAt { get; set; }
 
     // IV is always present — every stored file is encrypted
-    public string Iv { get; set; } = string.Empty;
+    public string Iv { get; set; } = null;
 
 
     public bool IsDeleted { get; set; } = false;

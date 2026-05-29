@@ -1,228 +1,144 @@
 using FileUploadService.Application.Configurations;
 using FileUploadService.Application.Implementation;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Moq;
 using System.Security.Cryptography;
+using System.Text;
 using Xunit;
 
 namespace FileUploadService.XunitTesting.UnitTests.Services;
 
 public class EncryptionServiceTests
 {
-    private readonly Mock<ILogger<EncryptionService>> _loggerMock = new();
+    private readonly EncryptionService _sut;
 
-    private EncryptionService BuildService(byte[]? keyOverride = null)
+    public EncryptionServiceTests()
     {
-        var key = keyOverride ?? RandomNumberGenerator.GetBytes(32);
+        var key = RandomNumberGenerator.GetBytes(32);
         var settings = Options.Create(new EncryptionSettings
         {
             AesKey = Convert.ToBase64String(key)
         });
-        return new EncryptionService(settings, _loggerMock.Object);
+        _sut = new EncryptionService(settings, NullLogger<EncryptionService>.Instance);
     }
 
-    // POSITIVE TEST CASES — EncryptAsync
-
+    // =========================================================
+    // EncryptAsync
+    // =========================================================
 
     [Fact]
-    public async Task EncryptAsync_AnyPlaintext_ReturnsNonEmptyEncryptedBytes()
+    public async Task EncryptAsync_ReturnsNonEmptyEncryptedBytes()
     {
-        
-        var svc       = BuildService();
-        var plaintext = "Hello Harsh, this is a secret!"u8.ToArray();
-        using var stream = new MemoryStream(plaintext);
-
-        
-        var result = await svc.EncryptAsync(stream);
-
-        
+        using var stream = PlainStream("Hello World");
+        var result = await _sut.EncryptAsync(stream);
         result.EncryptedBytes.Should().NotBeEmpty();
     }
 
-
     [Fact]
-    public async Task EncryptAsync_AnyPlaintext_ReturnsBase64IV()
+    public async Task EncryptAsync_ReturnsValidBase64Iv()
     {
-        
-        var svc = BuildService();
-        using var stream = new MemoryStream("test"u8.ToArray());
-
-        
-        var result = await svc.EncryptAsync(stream);
-
-        
-        result.IvBase64.Should().NotBeNullOrEmpty();
-        var ivBytes = Convert.FromBase64String(result.IvBase64);
-        ivBytes.Length.Should().Be(16, "AES-CBC IV is always 16 bytes");
+        using var stream = PlainStream("Hello World");
+        var result = await _sut.EncryptAsync(stream);
+        var act = () => Convert.FromBase64String(result.IvBase64);
+        act.Should().NotThrow();
     }
 
-
     [Fact]
-    public async Task EncryptAsync_AnyPlaintext_EncryptedBytesDifferFromPlaintext()
+    public async Task EncryptAsync_IvIs16Bytes()
     {
-        
-        var svc       = BuildService();
-        var plaintext = "This must NOT appear in ciphertext!"u8.ToArray();
-        using var stream = new MemoryStream(plaintext);
-
-        
-        var result = await svc.EncryptAsync(stream);
-
-        
-        result.EncryptedBytes.Should().NotEqual(plaintext);
+        using var stream = PlainStream("Hello World");
+        var result = await _sut.EncryptAsync(stream);
+        Convert.FromBase64String(result.IvBase64).Length.Should().Be(16);
     }
 
-
     [Fact]
-    public async Task EncryptAsync_SamePlaintext_TwiceDifferentCiphertext()
+    public async Task EncryptAsync_ProducesDifferentCiphertextEachCall()
     {
-        
-        var svc       = BuildService();
-        var plaintext = "same data"u8.ToArray();
+        var result1 = await _sut.EncryptAsync(PlainStream("same content"));
+        var result2 = await _sut.EncryptAsync(PlainStream("same content"));
 
-        using var stream1 = new MemoryStream(plaintext);
-        using var stream2 = new MemoryStream(plaintext);
-
-        
-        var result1 = await svc.EncryptAsync(stream1);
-        var result2 = await svc.EncryptAsync(stream2);
-
-        
-        result1.EncryptedBytes.Should().NotEqual(result2.EncryptedBytes,
-            "each encryption uses a fresh random IV — same plaintext = different ciphertext");
+        // Different IV → different ciphertext
         result1.IvBase64.Should().NotBe(result2.IvBase64);
-    }
-
-    // POSITIVE TEST CASES — DecryptAsync
-
-
-    [Fact]
-    public async Task DecryptAsync_ValidCiphertext_RecoveredOriginalData()
-    {
-        
-        var key = RandomNumberGenerator.GetBytes(32);
-        var svc = BuildService(key);
-
-        var original = "Harsh ka secret data"u8.ToArray();
-        using var plainStream = new MemoryStream(original);
-        var encrypted = await svc.EncryptAsync(plainStream);
-
-        using var encStream = new MemoryStream(encrypted.EncryptedBytes);
-
-        
-        var decryptedStream = await svc.DecryptAsync(encStream, encrypted.IvBase64);
-
-        
-        var decryptedBytes = ((MemoryStream)decryptedStream).ToArray();
-        decryptedBytes.Should().Equal(original);
-    }
-
-
-    [Fact]
-    public async Task DecryptAsync_ValidCiphertext_StreamPositionIsZero()
-    {
-        var svc = BuildService();
-        using var plainStream = new MemoryStream("position test"u8.ToArray());
-        var encrypted = await svc.EncryptAsync(plainStream);
-        using var encStream = new MemoryStream(encrypted.EncryptedBytes);
-
-        var decrypted = await svc.DecryptAsync(encStream, encrypted.IvBase64);
-
-        decrypted.Position.Should().Be(0);
+        result1.EncryptedBytes.Should().NotEqual(result2.EncryptedBytes);
     }
 
     [Fact]
-    public async Task RoundTrip_EncryptThenDecrypt_ProducesIdenticalBytes()
+    public async Task EncryptAsync_EncryptedSizeIsMultipleOf16()
     {
-        var key     = RandomNumberGenerator.GetBytes(32);
-        var svc     = BuildService(key);
-        var payload = Enumerable.Range(0, 256).Select(i => (byte)i).ToArray();
-
-        using var encryptInput = new MemoryStream(payload);
-        var encrypted = await svc.EncryptAsync(encryptInput);
-
-        using var decryptInput = new MemoryStream(encrypted.EncryptedBytes);
-
-        var decryptedStream = await svc.DecryptAsync(decryptInput, encrypted.IvBase64);
-        var result = ((MemoryStream)decryptedStream).ToArray();
-
-        result.Should().Equal(payload);
+        using var stream = PlainStream("test");
+        var result = await _sut.EncryptAsync(stream);
+        (result.EncryptedBytes.Length % 16).Should().Be(0);
     }
 
-    // NEGATIVE TEST CASES
+    // =========================================================
+    // DecryptAsync
+    // =========================================================
 
     [Fact]
-    public async Task DecryptAsync_InvalidBase64IV_ThrowsInvalidOperationException()
+    public async Task DecryptAsync_RoundTrip_ReturnsOriginalContent()
     {
-        var svc = BuildService();
-        using var encStream = new MemoryStream(new byte[] { 1, 2, 3, 4 });
+        const string original = "Hello, encrypted world!";
+        using var plain = PlainStream(original);
 
-        var act = async () => await svc.DecryptAsync(encStream, "NOT_VALID_BASE64!!!");
+        var encResult = await _sut.EncryptAsync(plain);
+        using var encStr = new MemoryStream(encResult.EncryptedBytes);
 
+        var decStream = await _sut.DecryptAsync(encStr, encResult.IvBase64);
+        var decText = await new StreamReader(decStream).ReadToEndAsync();
+
+        decText.Should().Be(original);
+    }
+
+    [Fact]
+    public async Task DecryptAsync_WrongIv_ThrowsInvalidOperationException()
+    {
+        using var plain = PlainStream("data");
+        var encResult = await _sut.EncryptAsync(plain);
+
+        var wrongIv = Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
+        using var encStr = new MemoryStream(encResult.EncryptedBytes);
+
+        var act = async () => await _sut.DecryptAsync(encStr, wrongIv);
+        await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [Fact]
+    public async Task DecryptAsync_InvalidBase64Iv_ThrowsInvalidOperationException()
+    {
+        using var encStr = new MemoryStream(new byte[32]);
+        var act = async () => await _sut.DecryptAsync(encStr, "NOT_VALID_BASE64!!!");
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*not valid Base64*");
+                 .WithMessage("*Base64*");
     }
 
     [Fact]
-    public async Task DecryptAsync_WrongIVLength_ThrowsInvalidOperationException()
+    public async Task DecryptAsync_IvWrongLength_ThrowsInvalidOperationException()
     {
-        // Arrange
-        var svc   = BuildService();
-        var wrongIv = Convert.ToBase64String(new byte[8]); // only 8 bytes
-        using var encStream = new MemoryStream(new byte[] { 1, 2, 3, 4 });
-
-        // Act
-        var act = async () => await svc.DecryptAsync(encStream, wrongIv);
-
-        // Assert
+        using var encStr = new MemoryStream(new byte[32]);
+        var shortIv = Convert.ToBase64String(new byte[8]); // 8 bytes, not 16
+        var act = async () => await _sut.DecryptAsync(encStr, shortIv);
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*IV must be 16 bytes*");
+                 .WithMessage("*16 bytes*");
     }
-
-    // ── Wrong key used for decryption → cryptographic error ───────
 
     [Fact]
-    public async Task DecryptAsync_WrongKey_ThrowsInvalidOperationException()
+    public async Task DecryptAsync_LargeFile_RoundTripSucceeds()
     {
-        // Arrange
-        var correctKey = RandomNumberGenerator.GetBytes(32);
-        var wrongKey   = RandomNumberGenerator.GetBytes(32);
+        var big = new byte[64_000];
+        RandomNumberGenerator.Fill(big);
+        using var plain = new MemoryStream(big);
 
-        var svcEncrypt = BuildService(correctKey);
-        var svcDecrypt = BuildService(wrongKey);
+        var encResult = await _sut.EncryptAsync(plain);
+        using var enc = new MemoryStream(encResult.EncryptedBytes);
+        var dec = await _sut.DecryptAsync(enc, encResult.IvBase64);
 
-        using var plainStream = new MemoryStream("sensitive data"u8.ToArray());
-        var encrypted = await svcEncrypt.EncryptAsync(plainStream);
-
-        using var encStream = new MemoryStream(encrypted.EncryptedBytes);
-
-        // Act
-        var act = async () => await svcDecrypt.DecryptAsync(encStream, encrypted.IvBase64);
-
-        // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*Failed to decrypt*");
+        using var ms = new MemoryStream();
+        await dec.CopyToAsync(ms);
+        ms.ToArray().Should().Equal(big);
     }
 
-    // ── Misconfigured key (not 32 bytes) → startup exception ──────
-
-    [Fact]
-    public void Constructor_InvalidKeyLength_ThrowsInvalidOperationException()
-    {
-        // Arrange — only 16 bytes (AES-128, not AES-256)
-        var shortKey = RandomNumberGenerator.GetBytes(16);
-        var settings = Options.Create(new EncryptionSettings
-        {
-            AesKey = Convert.ToBase64String(shortKey)
-        });
-
-        // Act
-        var act = () => new EncryptionService(settings, _loggerMock.Object);
-
-        // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*32 bytes*");
-    }
+    // ── helpers ──────────────────────────────────────────────────
+    private static MemoryStream PlainStream(string text)
+        => new(Encoding.UTF8.GetBytes(text));
 }

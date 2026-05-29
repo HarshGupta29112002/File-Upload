@@ -1,5 +1,4 @@
 using FileUploadService.Application.DTOs;
-using FileUploadService.Application.Interfaces;
 using FileUploadService.XunitTesting.IntegrationTests.Helpers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -23,247 +22,209 @@ public class FilesEndpointTests : IClassFixture<TestWebApplicationFactory>
     }
 
     // =========================================================
-    // POSITIVE TEST CASES — DOWNLOAD
+    // DOWNLOAD — GET /api/files/{referenceId}
     // =========================================================
-
-    // ── Known referenceId → 200 with file stream ──────────────────
 
     [Fact]
     public async Task GetFile_KnownReferenceId_Returns200()
     {
-        // Arrange
-        _factory.SetupHappyDownload("FILE-20260516-harsh");
-
-        // Act
-        var response = await _client.GetAsync("/api/files/FILE-20260516-harsh");
-
-        // Assert
+        _factory.SetupHappyDownload("FILE-20260516-AA0001");
+        var response = await _client.GetAsync("/api/files/FILE-20260516-AA0001");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
-
-    // ── Download response has Content-Disposition header ──────────
 
     [Fact]
     public async Task GetFile_KnownReferenceId_HasContentDispositionHeader()
     {
-        // Arrange
-        _factory.SetupHappyDownload("FILE-20260516-harsh");
-
-        // Act
-        var response = await _client.GetAsync("/api/files/FILE-20260516-harsh");
-
-        // Assert
+        _factory.SetupHappyDownload("FILE-20260516-AA0002");
+        var response = await _client.GetAsync("/api/files/FILE-20260516-AA0002");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentDisposition.Should().NotBeNull();
         response.Content.Headers.ContentDisposition!.DispositionType.Should().Be("attachment");
     }
 
-    // ── Metadata endpoint returns structured JSON ──────────────────
-
-    [Fact]
-    public async Task GetMetadata_KnownReferenceId_ReturnsJsonWithFields()
-    {
-        // Arrange
-        _factory.SetupHappyDownload("FILE-META-001");
-
-        // Act
-        var response = await _client.GetAsync("/api/files/FILE-META-001/metadata");
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-        json.GetProperty("success").GetBoolean().Should().BeTrue();
-        json.TryGetProperty("data", out _).Should().BeTrue();
-    }
-
-    // ── Metadata returns correct referenceId ───────────────────────
-
-    [Fact]
-    public async Task GetMetadata_KnownReferenceId_ContainsReferenceId()
-    {
-        // Arrange
-        _factory.SetupHappyDownload("FILE-META-002");
-
-        // Act
-        var response = await _client.GetAsync("/api/files/FILE-META-002/metadata");
-        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-
-        // Assert
-        var data = json.GetProperty("data");
-        data.GetProperty("referenceId").GetString().Should().Be("FILE-META-002");
-    }
-
-    // =========================================================
-    // NEGATIVE TEST CASES — DOWNLOAD
-    // =========================================================
-
-    // ── Unknown referenceId → 404 ─────────────────────────────────
-
     [Fact]
     public async Task GetFile_UnknownReferenceId_Returns404()
     {
-        // Arrange
         _factory.ResetMocks();
         _factory.FileService
             .Setup(s => s.DownloadFileAsync("FILE-NOTFOUND-000"))
             .ReturnsAsync((ValueTuple<FileMetadata, Stream>?)null);
 
-        // Act
         var response = await _client.GetAsync("/api/files/FILE-NOTFOUND-000");
-
-        // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
-
-    // ── 404 response body contains success=false ──────────────────
 
     [Fact]
     public async Task GetFile_UnknownReferenceId_ResponseBodyHasSuccessFalse()
     {
-        // Arrange
         _factory.ResetMocks();
         _factory.FileService
             .Setup(s => s.DownloadFileAsync(It.IsAny<string>()))
             .ReturnsAsync((ValueTuple<FileMetadata, Stream>?)null);
 
-        // Act
         var response = await _client.GetAsync("/api/files/NO-EXIST-123");
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-
-        // Assert
         json.GetProperty("success").GetBoolean().Should().BeFalse();
     }
-
-    // ── Metadata endpoint for unknown ID returns 404 ──────────────
-
-    [Fact]
-    public async Task GetMetadata_UnknownReferenceId_Returns404()
-    {
-        // Arrange
-        _factory.ResetMocks();
-        _factory.FileService
-            .Setup(s => s.DownloadFileAsync(It.IsAny<string>()))
-            .ReturnsAsync((ValueTuple<FileMetadata, Stream>?)null);
-
-        // Act
-        var response = await _client.GetAsync("/api/files/NOPE-999/metadata");
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-
-    // ── FileService throws unexpected exception → 500 ─────────────
 
     [Fact]
     public async Task GetFile_ServiceThrowsException_Returns500()
     {
-        // Arrange
         _factory.ResetMocks();
         _factory.FileService
             .Setup(s => s.DownloadFileAsync(It.IsAny<string>()))
-            .ThrowsAsync(new Exception("database blew up"));
+            .ThrowsAsync(new Exception("database error"));
 
-        // Act
         var response = await _client.GetAsync("/api/files/FILE-ERR-001");
-
-        // Assert
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
     }
 
-    // ── Wrong HTTP method → 405 ───────────────────────────────────
+    // =========================================================
+    // METADATA — GET /api/files/{referenceId}/metadata
+    // =========================================================
 
     [Fact]
-    public async Task Delete_FileEndpoint_Returns405()
+    public async Task GetMetadata_KnownReferenceId_Returns200()
     {
-        // Act
-        var response = await _client.DeleteAsync("/api/files/FILE-20260516-harsh");
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+        _factory.SetupHappyDownload("FILE-META-001");
+        var response = await _client.GetAsync("/api/files/FILE-META-001/metadata");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    // ── Unknown route → 404 ───────────────────────────────────────
+    [Fact]
+    public async Task GetMetadata_KnownReferenceId_ReturnsJsonWithSuccessTrue()
+    {
+        _factory.SetupHappyDownload("FILE-META-002");
+        var response = await _client.GetAsync("/api/files/FILE-META-002/metadata");
+        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+        json.GetProperty("success").GetBoolean().Should().BeTrue();
+        json.TryGetProperty("data", out _).Should().BeTrue();
+    }
 
     [Fact]
-    public async Task Get_UnknownRoute_Returns404()
+    public async Task GetMetadata_KnownReferenceId_ContainsReferenceId()
     {
-        // Act
-        var response = await _client.GetAsync("/api/unknown/route");
+        _factory.SetupHappyDownload("FILE-META-003");
+        var response = await _client.GetAsync("/api/files/FILE-META-003/metadata");
+        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+        json.GetProperty("data").GetProperty("referenceId").GetString()
+            .Should().Be("FILE-META-003");
+    }
 
-        // Assert
+    [Fact]
+    public async Task GetMetadata_UnknownReferenceId_Returns404()
+    {
+        _factory.ResetMocks();
+        _factory.FileService
+            .Setup(s => s.GetFileMetadataAsync(It.IsAny<string>()))
+            .ReturnsAsync((FileMetadata?)null);
+
+        var response = await _client.GetAsync("/api/files/NOPE-999/metadata");
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     // =========================================================
-    // UPLOAD ENDPOINT — POST /api/files/upload
+    // DELETE — DELETE /api/files/{referenceId}
     // =========================================================
 
-    // ── Valid file → 201 Created ───────────────────────────────
-
     [Fact]
-    public async Task UploadFile_ValidFile_Returns201()
+    public async Task DeleteFile_ExistingFile_Returns200()
     {
-        // Arrange
-        _factory.SetupHappyUpload("FILE-20260519-UP001");
-        using var content = new MultipartFormDataContent();
-        var fileBytes = new byte[600];
-        fileBytes[0] = 0xFF; fileBytes[1] = 0xD8; fileBytes[2] = 0xFF; fileBytes[3] = 0xE0;
-        content.Add(new ByteArrayContent(fileBytes), "file", "photo.jpg");
+        _factory.ResetMocks();
+        _factory.FileService
+            .Setup(s => s.DeleteFileAsync("FILE-DEL-001"))
+            .ReturnsAsync(true);
 
-        // Act
-        var response = await _client.PostAsync("/api/files/upload", content);
-
-        // Assert
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.Created);
+        var response = await _client.DeleteAsync("/api/files/FILE-DEL-001");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    // ── Valid file → response body has success=true and referenceId ───
+    [Fact]
+    public async Task DeleteFile_ExistingFile_ResponseHasSuccessTrue()
+    {
+        _factory.ResetMocks();
+        _factory.FileService
+            .Setup(s => s.DeleteFileAsync("FILE-DEL-002"))
+            .ReturnsAsync(true);
+
+        var response = await _client.DeleteAsync("/api/files/FILE-DEL-002");
+        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+        json.GetProperty("success").GetBoolean().Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task DeleteFile_NonExistentFile_Returns404()
+    {
+        _factory.ResetMocks();
+        _factory.FileService
+            .Setup(s => s.DeleteFileAsync(It.IsAny<string>()))
+            .ReturnsAsync(false);
+
+        var response = await _client.DeleteAsync("/api/files/FILE-GONE-999");
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task DeleteFile_NonExistentFile_ResponseHasSuccessFalse()
+    {
+        _factory.ResetMocks();
+        _factory.FileService
+            .Setup(s => s.DeleteFileAsync(It.IsAny<string>()))
+            .ReturnsAsync(false);
+
+        var response = await _client.DeleteAsync("/api/files/FILE-GONE-888");
+        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+        json.GetProperty("success").GetBoolean().Should().BeFalse();
+    }
+
+    // =========================================================
+    // UPLOAD — POST /api/files/upload
+    // =========================================================
+
+    [Fact]
+    public async Task UploadFile_ValidJpeg_Returns201()
+    {
+        _factory.SetupHappyUpload("FILE-20260516-UP001");
+        using var content = BuildJpegContent();
+        var response = await _client.PostAsync("/api/files/upload", content);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
 
     [Fact]
     public async Task UploadFile_ValidFile_ResponseContainsReferenceId()
     {
-        // Arrange
-        _factory.SetupHappyUpload("FILE-20260519-UP002");
-        using var content = new MultipartFormDataContent();
-        var fileBytes = new byte[600];
-        fileBytes[0] = 0xFF; fileBytes[1] = 0xD8; fileBytes[2] = 0xFF; fileBytes[3] = 0xE0;
-        content.Add(new ByteArrayContent(fileBytes), "file", "photo.jpg");
-
-        // Act
+        _factory.SetupHappyUpload("FILE-20260516-UP002");
+        using var content = BuildJpegContent();
         var response = await _client.PostAsync("/api/files/upload", content);
-        var json = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
-
-        // Assert
-        json.TryGetProperty("data", out var data).Should().BeTrue();
-        data.GetProperty("referenceId").GetString().Should().Be("FILE-20260519-UP002");
+        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+        json.GetProperty("data").GetProperty("referenceId").GetString()
+            .Should().Be("FILE-20260516-UP002");
     }
-
-    // ── Valid file with uploadedBy header → 201 ───────────────
 
     [Fact]
-    public async Task UploadFile_WithUploadedBy_Returns201()
+    public async Task UploadFile_ValidFile_ResponseIsJson()
     {
-        // Arrange
-        _factory.SetupHappyUpload("FILE-20260519-UP003");
-        using var content = new MultipartFormDataContent();
-        var fileBytes = new byte[600];
-        fileBytes[0] = 0xFF; fileBytes[1] = 0xD8; fileBytes[2] = 0xFF; fileBytes[3] = 0xE0;
-        content.Add(new ByteArrayContent(fileBytes), "file", "photo.jpg");
-        content.Add(new StringContent(Guid.NewGuid().ToString()), "uploadedBy");
-
-        // Act
+        _factory.SetupHappyUpload("FILE-20260516-UP003");
+        using var content = BuildJpegContent();
         var response = await _client.PostAsync("/api/files/upload", content);
-
-        // Assert
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.Created);
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
     }
 
-    // ── Service throws FileValidationException → 400 ──────────
+    [Fact]
+    public async Task UploadFile_ValidFile_CallsServiceOnce()
+    {
+        _factory.SetupHappyUpload("FILE-20260516-UP004");
+        using var content = BuildJpegContent();
+        await _client.PostAsync("/api/files/upload", content);
+        _factory.FileService.Verify(
+            s => s.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string?>()),
+            Times.Once);
+    }
 
     [Fact]
     public async Task UploadFile_ValidationFails_Returns400()
     {
-        // Arrange
         _factory.ResetMocks();
         var validationResult = new FileValidationResult
         {
@@ -278,19 +239,13 @@ public class FilesEndpointTests : IClassFixture<TestWebApplicationFactory>
         using var content = new MultipartFormDataContent();
         content.Add(new ByteArrayContent(new byte[] { 0x4D, 0x5A }), "file", "malware.exe");
 
-        // Act
         var response = await _client.PostAsync("/api/files/upload", content);
-
-        // Assert
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-
-    // ── Service throws VirusDetectedException → 422 ───────────
 
     [Fact]
     public async Task UploadFile_VirusDetected_Returns422()
     {
-        // Arrange
         _factory.ResetMocks();
         _factory.FileService
             .Setup(s => s.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string?>()))
@@ -299,19 +254,13 @@ public class FilesEndpointTests : IClassFixture<TestWebApplicationFactory>
         using var content = new MultipartFormDataContent();
         content.Add(new ByteArrayContent(new byte[] { 0x00 }), "file", "infected.pdf");
 
-        // Act
         var response = await _client.PostAsync("/api/files/upload", content);
-
-        // Assert
         ((int)response.StatusCode).Should().Be(422);
     }
-
-    // ── Service throws VirusScanException → 503 ───────────────
 
     [Fact]
     public async Task UploadFile_ScannerUnavailable_Returns503()
     {
-        // Arrange
         _factory.ResetMocks();
         _factory.FileService
             .Setup(s => s.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string?>()))
@@ -320,19 +269,13 @@ public class FilesEndpointTests : IClassFixture<TestWebApplicationFactory>
         using var content = new MultipartFormDataContent();
         content.Add(new ByteArrayContent(new byte[] { 0x00 }), "file", "test.pdf");
 
-        // Act
         var response = await _client.PostAsync("/api/files/upload", content);
-
-        // Assert
         ((int)response.StatusCode).Should().Be(503);
     }
-
-    // ── Service throws generic exception → 500 ────────────────
 
     [Fact]
     public async Task UploadFile_ServiceThrows_Returns500()
     {
-        // Arrange
         _factory.ResetMocks();
         _factory.FileService
             .Setup(s => s.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string?>()))
@@ -341,51 +284,25 @@ public class FilesEndpointTests : IClassFixture<TestWebApplicationFactory>
         using var content = new MultipartFormDataContent();
         content.Add(new ByteArrayContent(new byte[] { 0x00 }), "file", "test.pdf");
 
-        // Act
         var response = await _client.PostAsync("/api/files/upload", content);
-
-        // Assert
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.InternalServerError);
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
     }
-
-    // ── IFileService.UploadFileAsync called exactly once ──────
 
     [Fact]
-    public async Task UploadFile_ValidFile_CallsServiceOnce()
+    public async Task Get_UnknownRoute_Returns404()
     {
-        // Arrange
-        _factory.SetupHappyUpload("FILE-20260519-UP004");
-        using var content = new MultipartFormDataContent();
-        var fileBytes = new byte[600];
-        fileBytes[0] = 0xFF; fileBytes[1] = 0xD8; fileBytes[2] = 0xFF; fileBytes[3] = 0xE0;
-        content.Add(new ByteArrayContent(fileBytes), "file", "photo.jpg");
-
-        // Act
-        await _client.PostAsync("/api/files/upload", content);
-
-        // Assert
-        _factory.FileService.Verify(
-            s => s.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string?>()),
-            Times.Once);
+        var response = await _client.GetAsync("/api/unknown/route");
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    // ── Response Content-Type is application/json ─────────────
-
-    [Fact]
-    public async Task UploadFile_ValidFile_ResponseIsJson()
+    // ── helpers ──────────────────────────────────────────────────
+    private static MultipartFormDataContent BuildJpegContent()
     {
-        // Arrange
-        _factory.SetupHappyUpload("FILE-20260519-UP005");
-        using var content = new MultipartFormDataContent();
+        var content = new MultipartFormDataContent();
         var fileBytes = new byte[600];
-        fileBytes[0] = 0xFF; fileBytes[1] = 0xD8; fileBytes[2] = 0xFF; fileBytes[3] = 0xE0;
+        fileBytes[0] = 0xFF; fileBytes[1] = 0xD8;
+        fileBytes[2] = 0xFF; fileBytes[3] = 0xE0;
         content.Add(new ByteArrayContent(fileBytes), "file", "photo.jpg");
-
-        // Act
-        var response = await _client.PostAsync("/api/files/upload", content);
-
-        // Assert
-        response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
+        return content;
     }
-
 }

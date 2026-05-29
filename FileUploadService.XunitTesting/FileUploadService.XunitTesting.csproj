@@ -25,7 +25,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<!-- Point to your main API project -->
 		<ProjectReference Include="..\FileUploadService\FileUploadService.csproj" />
 	</ItemGroup>
 

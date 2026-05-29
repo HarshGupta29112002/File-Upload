@@ -1,287 +1,351 @@
-﻿using FileUploadService.Application.Configurations;
+﻿using Dapper;
+using FileUploadService.Application.Configurations;
 using FileUploadService.Application.DTOs;
 using FileUploadService.Application.Implementation;
 using FileUploadService.Application.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
+using System.Security.Cryptography;
+using System.Text;
 using Xunit;
 
 namespace FileUploadService.XunitTesting.UnitTests.Services;
 
-public class FileServiceUploadTests
+/// <summary>
+/// Unit tests for FileService.
+/// Uses SQLite in-memory for database operations, mocks for ClamAV and validation.
+/// </summary>
+public class FileServiceTests : IDisposable
 {
+    private readonly SqliteConnection _db;
+    private readonly FileService _sut;
+    private readonly Mock<IClamClientFactory> _clamFactory = new();
+    private readonly Mock<IVirusScanClient> _clamClient = new();
 
-
-    private readonly Mock<IFileService> _fileServiceMock = new();
-
-    private static IFormFile MakeMockFile(
-        string name = "photo.jpg",
-        string contentType = "image/jpeg",
-        long size = 1024)
+    public FileServiceTests()
     {
-        var mock = new Mock<IFormFile>();
-        mock.Setup(f => f.FileName).Returns(name);
-        mock.Setup(f => f.Length).Returns(size);
-        mock.Setup(f => f.ContentType).Returns(contentType);
-        mock.Setup(f => f.OpenReadStream())
-            .Returns(() => new MemoryStream(new byte[size]));
-        return mock.Object;
+        // ── in-memory SQLite ──────────────────────────────────────
+        _db = new SqliteConnection("Data Source=:memory:");
+        _db.Open();
+        _db.Execute(@"
+            CREATE TABLE files (
+                id                INTEGER PRIMARY KEY AUTOINCREMENT,
+                reference_id      TEXT    NOT NULL UNIQUE,
+                original_filename TEXT    NOT NULL,
+                storage_path      TEXT    NOT NULL,
+                content_type      TEXT,
+                file_size         INTEGER NOT NULL,
+                uploaded_by       INTEGER,
+                created_at        TEXT    NOT NULL,
+                iv                TEXT    NOT NULL,
+                is_deleted        INTEGER NOT NULL DEFAULT 0
+            )");
+
+        // ── ClamAV mock — always clean ────────────────────────────
+        _clamClient.Setup(c => c.PingAsync()).ReturnsAsync(true);
+        _clamClient.Setup(c => c.ScanAsync(It.IsAny<Stream>(), It.IsAny<string>()))
+                   .ReturnsAsync(VirusScanResult.Clean());
+        _clamFactory.Setup(f => f.Create(It.IsAny<string>(), It.IsAny<int>()))
+                    .Returns(_clamClient.Object);
+
+        _sut = BuildService();
     }
 
+    // =========================================================
+    // UploadFileAsync — metadata saved
+    // =========================================================
 
     [Fact]
-    public async Task UploadFileAsync_ValidFile_ReturnsReferenceIdWithFilePrefix()
+    public async Task UploadFileAsync_ValidFile_SavesMetadataToDatabase()
     {
-        _fileServiceMock
-            .Setup(s => s.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string?>()))
-            .ReturnsAsync(new FileUploadResponse
-            {
-                ReferenceId = "FILE-20260518-harsh",
-                OriginalFilename = "photo.jpg",
-                ContentType = "image/jpeg",
-                FileSizeBytes = 1024,
-                CreatedAt = DateTime.UtcNow
-            });
+        var file = MakeJpegFile("photo.jpg", 600);
+        var response = await _sut.UploadFileAsync(file, null);
 
-        var result = await _fileServiceMock.Object.UploadFileAsync(MakeMockFile(), null);
+        var row = _db.QuerySingleOrDefault<dynamic>(
+            "SELECT * FROM files WHERE reference_id = @ref",
+            new { @ref = response.ReferenceId });
 
-        result.ReferenceId.Should().StartWith("FILE-");
-        result.OriginalFilename.Should().Be("photo.jpg");
-        result.FileSizeBytes.Should().Be(1024);
+        ((object)row).Should().NotBeNull();
     }
-
-    // ── FileValidationException propagates through service ─────────
 
     [Fact]
-    public async Task UploadFileAsync_ValidationFails_ThrowsFileValidationException()
+    public async Task UploadFileAsync_ValidFile_ReturnsReferenceId()
     {
-        var validationResult = new FileValidationResult
-        {
-            IsValid = false,
-            FailureReason = "Blocked extension",
-            Details = new ValidationDetails { ClaimedExtension = ".exe" }
-        };
-
-        _fileServiceMock
-            .Setup(s => s.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string?>()))
-            .ThrowsAsync(new FileValidationException(validationResult));
-
-        var act = async () => await _fileServiceMock.Object.UploadFileAsync(
-            MakeMockFile("malware.exe", "application/octet-stream"), null);
-
-        await act.Should().ThrowAsync<FileValidationException>()
-            .WithMessage("*Blocked extension*");
+        var file = MakeJpegFile("photo.jpg", 600);
+        var response = await _sut.UploadFileAsync(file, null);
+        response.ReferenceId.Should().StartWith("FILE-");
     }
-
-    // ── VirusDetectedException propagates through service ──────────
 
     [Fact]
-    public async Task UploadFileAsync_VirusDetected_ThrowsVirusDetectedException()
+    public async Task UploadFileAsync_ReferenceId_HasCorrectFormat()
     {
-        _fileServiceMock
-            .Setup(s => s.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string?>()))
-            .ThrowsAsync(new VirusDetectedException("Win.Test.EICAR_HDB-1"));
-
-        var act = async () =>
-            await _fileServiceMock.Object.UploadFileAsync(MakeMockFile(), null);
-
-        await act.Should().ThrowAsync<VirusDetectedException>()
-            .WithMessage("*Win.Test.EICAR_HDB-1*");
+        var file = MakeJpegFile("photo.jpg", 600);
+        var response = await _sut.UploadFileAsync(file, null);
+        response.ReferenceId.Should().MatchRegex(@"^FILE-\d{8}-[A-F0-9]{6}$");
     }
 
-    // ── VirusScanException propagates when scanner unavailable ─────
+    [Fact]
+    public async Task UploadFileAsync_TwoUploads_ProduceDifferentReferenceIds()
+    {
+        var r1 = await _sut.UploadFileAsync(MakeJpegFile("a.jpg", 600), null);
+        var r2 = await _sut.UploadFileAsync(MakeJpegFile("b.jpg", 600), null);
+        r1.ReferenceId.Should().NotBe(r2.ReferenceId);
+    }
+
+    [Fact]
+    public async Task UploadFileAsync_StoresIvInDatabase()
+    {
+        var file = MakeJpegFile("photo.jpg", 600);
+        var response = await _sut.UploadFileAsync(file, null);
+
+        var iv = _db.QuerySingle<string>(
+            "SELECT iv FROM files WHERE reference_id = @ref",
+            new { @ref = response.ReferenceId });
+
+        iv.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task UploadFileAsync_ValidUploadedBy_SavesItAsLong()
+    {
+        var file = MakeJpegFile("photo.jpg", 600);
+        var response = await _sut.UploadFileAsync(file, "42");
+
+        var uploadedBy = _db.QuerySingle<long?>(
+            "SELECT uploaded_by FROM files WHERE reference_id = @ref",
+            new { @ref = response.ReferenceId });
+
+        uploadedBy.Should().Be(42L);
+    }
+
+    [Fact]
+    public async Task UploadFileAsync_NullUploadedBy_SavesNull()
+    {
+        var file = MakeJpegFile("photo.jpg", 600);
+        var response = await _sut.UploadFileAsync(file, null);
+
+        var uploadedBy = _db.QuerySingle<long?>(
+            "SELECT uploaded_by FROM files WHERE reference_id = @ref",
+            new { @ref = response.ReferenceId });
+
+        uploadedBy.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task UploadFileAsync_IsDeletedDefaultsFalse()
+    {
+        var file = MakeJpegFile("photo.jpg", 600);
+        var response = await _sut.UploadFileAsync(file, null);
+
+        var isDeleted = _db.QuerySingle<int>(
+            "SELECT is_deleted FROM files WHERE reference_id = @ref",
+            new { @ref = response.ReferenceId });
+
+        isDeleted.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task UploadFileAsync_EmptyFile_ThrowsFileValidationException()
+    {
+        var file = MakeFormFile("empty.jpg", Array.Empty<byte>(), "image/jpeg");
+        var act = async () => await _sut.UploadFileAsync(file, null);
+        await act.Should().ThrowAsync<FileValidationException>();
+    }
+
+    [Fact]
+    public async Task UploadFileAsync_BlockedExtension_ThrowsFileValidationException()
+    {
+        var file = MakeFormFile("malware.exe", new byte[] { 0x4D, 0x5A }, "application/octet-stream");
+        var act = async () => await _sut.UploadFileAsync(file, null);
+        await act.Should().ThrowAsync<FileValidationException>();
+    }
 
     [Fact]
     public async Task UploadFileAsync_ScannerUnavailable_ThrowsVirusScanException()
     {
-        _fileServiceMock
-            .Setup(s => s.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string?>()))
-            .ThrowsAsync(new VirusScanException("ClamAV daemon not responding"));
-
-        var act = async () =>
-            await _fileServiceMock.Object.UploadFileAsync(MakeMockFile(), null);
-
-        await act.Should().ThrowAsync<VirusScanException>()
-            .WithMessage("*ClamAV*");
+        _clamClient.Setup(c => c.PingAsync()).ReturnsAsync(false);
+        var file = MakeJpegFile("photo.jpg", 600);
+        var act = async () => await _sut.UploadFileAsync(file, null);
+        await act.Should().ThrowAsync<VirusScanException>();
     }
 
-    // ── Upload called with null uploadedBy ─────────────────────────
+    [Fact]
+    public async Task UploadFileAsync_VirusDetected_ThrowsVirusDetectedException()
+    {
+        _clamClient.Setup(c => c.ScanAsync(It.IsAny<Stream>(), It.IsAny<string>()))
+                   .ReturnsAsync(VirusScanResult.Infected("Win.Test.EICAR_HDB-1"));
+
+        var file = MakeJpegFile("photo.jpg", 600);
+        var act = async () => await _sut.UploadFileAsync(file, null);
+        await act.Should().ThrowAsync<VirusDetectedException>();
+    }
+
+    // =========================================================
+    // DeleteFileAsync
+    // =========================================================
 
     [Fact]
-    public async Task UploadFileAsync_NullUploadedBy_StillSucceeds()
+    public async Task DeleteFileAsync_ExistingFile_ReturnsTrue()
     {
-        _fileServiceMock
-            .Setup(s => s.UploadFileAsync(It.IsAny<IFormFile>(), null))
-            .ReturnsAsync(new FileUploadResponse
+        InsertFile("FILE-DEL-001");
+        var result = await _sut.DeleteFileAsync("FILE-DEL-001");
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task DeleteFileAsync_ExistingFile_SetsIsDeletedTrue()
+    {
+        InsertFile("FILE-DEL-002");
+        await _sut.DeleteFileAsync("FILE-DEL-002");
+
+        var isDeleted = _db.QuerySingle<int>(
+            "SELECT is_deleted FROM files WHERE reference_id = 'FILE-DEL-002'");
+        isDeleted.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task DeleteFileAsync_NonExistentFile_ReturnsFalse()
+    {
+        var result = await _sut.DeleteFileAsync("FILE-NONEXISTENT-999");
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task DeleteFileAsync_AlreadyDeletedFile_ReturnsFalse()
+    {
+        InsertFile("FILE-DEL-003", isDeleted: 1);
+        var result = await _sut.DeleteFileAsync("FILE-DEL-003");
+        result.Should().BeFalse();
+    }
+
+    // =========================================================
+    // GetFileMetadataAsync
+    // =========================================================
+
+    [Fact]
+    public async Task GetFileMetadataAsync_ExistingFile_ReturnsMetadata()
+    {
+        InsertFile("FILE-META-001");
+        var metadata = await _sut.GetFileMetadataAsync("FILE-META-001");
+        metadata.Should().NotBeNull();
+        metadata!.ReferenceId.Should().Be("FILE-META-001");
+    }
+
+    [Fact]
+    public async Task GetFileMetadataAsync_NonExistentFile_ReturnsNull()
+    {
+        var metadata = await _sut.GetFileMetadataAsync("FILE-NOTFOUND-999");
+        metadata.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetFileMetadataAsync_SoftDeletedFile_ReturnsNull()
+    {
+        InsertFile("FILE-SDEL-001", isDeleted: 1);
+        var metadata = await _sut.GetFileMetadataAsync("FILE-SDEL-001");
+        metadata.Should().BeNull();
+    }
+
+    // =========================================================
+    // Helpers
+    // =========================================================
+
+    private FileService BuildService()
+    {
+        var storageSettings = Options.Create(new FileStorageSettings
+        {
+            BasePath = Path.Combine(Path.GetTempPath(), "fus-tests"),
+            MaxFileSizeBytes = 10_485_760,
+            AllowedExtensions = new List<string> { ".jpg", ".jpeg", ".png", ".pdf", ".docx", ".xlsx", ".webp" },
+            AllowedMimeTypes = new Dictionary<string, string>
             {
-                ReferenceId = "FILE-20260518-KAALU2",
-                OriginalFilename = "photo.jpg",
-                FileSizeBytes = 512,
-                CreatedAt = DateTime.UtcNow
-            });
+                { ".jpg",  "image/jpeg" },
+                { ".jpeg", "image/jpeg" },
+                { ".png",  "image/png"  },
+                { ".pdf",  "application/pdf" }
+            }
+        });
 
-        var result = await _fileServiceMock.Object.UploadFileAsync(MakeMockFile(), null);
-        result.Should().NotBeNull();
-        result.ReferenceId.Should().NotBeNullOrEmpty();
-    }
+        var encSettings = Options.Create(new EncryptionSettings
+        {
+            AesKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
+        });
 
-    // ── Upload called with valid uploadedBy GUID ───────────────────
-
-    [Fact]
-    public async Task UploadFileAsync_ValidUploadedByGuid_StillSucceeds()
-    {
-        var uploaderId = Guid.NewGuid().ToString();
-
-        _fileServiceMock
-            .Setup(s => s.UploadFileAsync(It.IsAny<IFormFile>(), uploaderId))
-            .ReturnsAsync(new FileUploadResponse
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ReferenceId = "FILE-20260518-KAALU3",
-                OriginalFilename = "photo.jpg",
-                FileSizeBytes = 512,
-                CreatedAt = DateTime.UtcNow
+                { "ConnectionStrings:DefaultConnection", "Data Source=:memory:" }
+            })
+            .Build();
+
+        var validator = new FileValidationService(
+            storageSettings,
+            NullLogger<FileValidationService>.Instance);
+
+        var virusScanner = new VirusScanService(
+            Options.Create(new ClamAvSettings()),
+            NullLogger<VirusScanService>.Instance,
+            _clamFactory.Object);
+
+        var encryptionService = new EncryptionService(
+            encSettings,
+            NullLogger<EncryptionService>.Instance);
+
+        return new FileService(
+            storageSettings,
+            config,
+            NullLogger<FileService>.Instance,
+            validator,
+            virusScanner,
+            encryptionService,
+            _db);  // inject SQLite test connection
+    }
+
+    /// <summary>Build a JPEG IFormFile with valid magic bytes.</summary>
+    private static IFormFile MakeJpegFile(string name, int size)
+    {
+        var bytes = new byte[size];
+        bytes[0] = 0xFF; bytes[1] = 0xD8;
+        bytes[2] = 0xFF; bytes[3] = 0xE0;
+        return MakeFormFile(name, bytes, "image/jpeg");
+    }
+
+    private static IFormFile MakeFormFile(string name, byte[] content, string contentType)
+    {
+        var stream = new MemoryStream(content);
+        return new FormFile(stream, 0, content.Length, "file", name)
+        {
+            Headers = new HeaderDictionary(),
+            ContentType = contentType
+        };
+    }
+
+    private void InsertFile(string referenceId, int isDeleted = 0)
+    {
+        _db.Execute(@"
+            INSERT INTO files
+                (reference_id, original_filename, storage_path, content_type,
+                 file_size, uploaded_by, created_at, iv, is_deleted)
+            VALUES
+                (@ref, 'test.pdf', 'uploads/test.enc', 'application/pdf',
+                 1024, NULL, @now, @iv, @del)",
+            new
+            {
+                @ref = referenceId,
+                @now = DateTime.UtcNow.ToString("o"),
+                @iv = Convert.ToBase64String(new byte[16]),
+                @del = isDeleted
             });
-
-        var result = await _fileServiceMock.Object.UploadFileAsync(MakeMockFile(), uploaderId);
-        result.Should().NotBeNull();
     }
 
-
-    [Fact]
-    public async Task DownloadFileAsync_UnknownReferenceId_ReturnsNull()
+    public void Dispose()
     {
-        _fileServiceMock
-            .Setup(s => s.DownloadFileAsync("FILE-NOTFOUND"))
-            .ReturnsAsync((ValueTuple<FileMetadata, Stream>?)null);
-
-        var result = await _fileServiceMock.Object.DownloadFileAsync("FILE-NOTFOUND");
-        result.Should().BeNull();
-    }
-
-    // ── Download returns metadata + stream for known referenceId ───
-
-    [Fact]
-    public async Task DownloadFileAsync_KnownReferenceId_ReturnsMetadataAndStream()
-    {
-        var metadata = new FileMetadata
-        {
-            Id = 1L,
-            ReferenceId = "FILE-20260518-KAALU4",
-            OriginalFilename = "report.pdf",
-            ContentType = "application/pdf",
-            FileSize = 2048,
-            CreatedAt = DateTime.UtcNow,
-            IsDeleted = false,
-            Iv = Convert.ToBase64String(new byte[16])
-        };
-        var stream = new MemoryStream(new byte[] { 0x25, 0x50, 0x44, 0x46 });
-
-        _fileServiceMock
-            .Setup(s => s.DownloadFileAsync("FILE-20260518-KAALU4"))
-            .ReturnsAsync((metadata, (Stream)stream));
-
-        var result = await _fileServiceMock.Object.DownloadFileAsync("FILE-20260518-KAALU4");
-        result.Should().NotBeNull();
-        result!.Value.Metadata.ReferenceId.Should().Be("FILE-20260518-KAALU4");
-        result!.Value.FileStream.Should().NotBeNull();
-    }
-
-    // ── Download result has correct content type ──────────────────
-
-    [Fact]
-    public async Task DownloadFileAsync_KnownReferenceId_MetadataHasCorrectContentType()
-    {
-        var metadata = new FileMetadata
-        {
-            ReferenceId = "FILE-CT-001",
-            ContentType = "image/png",
-            OriginalFilename = "image.png",
-            FileSize = 100,
-            CreatedAt = DateTime.UtcNow
-        };
-        var stream = new MemoryStream(new byte[4]);
-
-        _fileServiceMock
-            .Setup(s => s.DownloadFileAsync("FILE-CT-001"))
-            .ReturnsAsync((metadata, (Stream)stream));
-
-        var result = await _fileServiceMock.Object.DownloadFileAsync("FILE-CT-001");
-        result!.Value.Metadata.ContentType.Should().Be("image/png");
-    }
-
-    // ── Download stream is readable ────────────────────────────────
-
-    [Fact]
-    public async Task DownloadFileAsync_KnownReferenceId_StreamIsReadable()
-    {
-        var payload = new byte[] { 1, 2, 3, 4, 5 };
-        var metadata = new FileMetadata
-        {
-            ReferenceId = "FILE-STREAM-001",
-            OriginalFilename = "data.pdf",
-            ContentType = "application/pdf",
-            FileSize = payload.Length,
-            CreatedAt = DateTime.UtcNow
-        };
-        var stream = new MemoryStream(payload);
-
-        _fileServiceMock
-            .Setup(s => s.DownloadFileAsync("FILE-STREAM-001"))
-            .ReturnsAsync((metadata, (Stream)stream));
-
-        var result = await _fileServiceMock.Object.DownloadFileAsync("FILE-STREAM-001");
-        var buffer = new byte[10];
-        var bytesRead = await result!.Value.FileStream.ReadAsync(buffer);
-        bytesRead.Should().Be(payload.Length);
-    }
-}
-
-public class FileMetadataTests
-{
-    [Fact]
-    public void FileMetadata_DefaultValues_AreCorrect()
-    {
-        var m = new FileMetadata();
-        m.IsDeleted.Should().BeFalse();
-        m.Iv.Should().BeNull();
-        m.UploadedBy.Should().BeNull();
-        m.StoragePath.Should().BeNullOrEmpty();
-    }
-
-    [Fact]
-    public void FileMetadata_AllPropertiesSetCorrectly()
-    {
-        var id = Guid.NewGuid();
-        var uid = Guid.NewGuid();
-        var now = DateTime.UtcNow;
-
-        var m = new FileMetadata
-        {
-            Id = 1L,
-            ReferenceId = "FILE-META-001",
-            OriginalFilename = "test.pdf",
-            StoragePath = "uploads/2026/05/abc.enc",
-            ContentType = "application/pdf",
-            FileSize = 4096,
-            UploadedBy = 1L,
-            CreatedAt = now,
-            Iv = "aGVsbG8=",
-            IsDeleted = false
-        };
-
-        m.Id.Should().Be(1L);
-        m.ReferenceId.Should().Be("FILE-META-001");
-        m.OriginalFilename.Should().Be("test.pdf");
-        m.StoragePath.Should().Be("uploads/2026/05/abc.enc");
-        m.ContentType.Should().Be("application/pdf");
-        m.FileSize.Should().Be(4096);
-        m.UploadedBy.Should().Be(1L);
-        m.CreatedAt.Should().Be(now);
-        m.Iv.Should().Be("aGVsbG8=");
-        m.IsDeleted.Should().BeFalse();
+        _db.Close();
+        _db.Dispose();
     }
 }
