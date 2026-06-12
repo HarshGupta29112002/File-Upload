@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ── MVC ───────────────────────────────────────────────────────
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>
     {
@@ -15,19 +16,13 @@ builder.Services.AddControllers()
                 .Where(e => e.Value?.Errors.Count > 0)
                 .SelectMany(e => e.Value!.Errors.Select(err =>
                     $"{e.Key}: {(string.IsNullOrWhiteSpace(err.ErrorMessage)
-                        ? "Invalid value provided."
-                        : err.ErrorMessage)}"
-                ))
-                .ToList();
-
-            var correlationId = context.HttpContext.Items[CorrelationIdMiddleware.HeaderName]
-                                    ?.ToString() ?? "N/A";
+                        ? "Invalid value." : err.ErrorMessage)}"
+                )).ToList();
 
             return new BadRequestObjectResult(new
             {
                 success = false,
-                correlationId,
-                message = "Request validation failed. See 'errors' for details.",
+                message = "Request validation failed.",
                 errors
             });
         };
@@ -39,52 +34,53 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new()
     {
         Title = "File Upload Microservice",
-        Version = "v1",
-        Description = "A minimal microservice for uploading and downloading files."
+        Version = "v1"
     });
 });
 
+// ── CONFIGURATION ─────────────────────────────────────────────
 builder.Services.Configure<FileStorageSettings>(
     builder.Configuration.GetSection(FileStorageSettings.SectionName)
 );
-
+builder.Services.Configure<VideoStorageSettings>(
+    builder.Configuration.GetSection(VideoStorageSettings.SectionName)
+);
 builder.Services.Configure<ClamAvSettings>(
     builder.Configuration.GetSection(ClamAvSettings.SectionName)
 );
 
-builder.Services.Configure<EncryptionSettings>(
-    builder.Configuration.GetSection(EncryptionSettings.SectionName)
-);
-
-// Change 4: validate AES key at startup — fail fast rather than fail on first upload.
-// This calls GetKeyBytes() which throws a clear InvalidOperationException if
-// Encryption:AesKey is missing, not Base64, or not 32 bytes.
-var encryptionSettings = builder.Configuration
-    .GetSection(EncryptionSettings.SectionName)
-    .Get<EncryptionSettings>()
-    ?? throw new InvalidOperationException(
-        "Encryption section is missing from configuration entirely."
-    );
-encryptionSettings.GetKeyBytes(); // throws immediately if key is wrong
-
-builder.Services.AddSingleton<IClamClientFactory, DefaultClamClientFactory>();
-builder.Services.AddScoped<VirusScanService>();
-builder.Services.AddScoped<EncryptionService>();
-builder.Services.AddScoped<FileValidationService>();
-builder.Services.AddScoped<IFileService, FileService>();
-
+// ── KESTREL / FORM LIMITS ─────────────────────────────────────
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Limits.MaxRequestBodySize = 52_428_800; // 50 MB
+    // 500 MB — must cover the largest video upload you expect
+    options.Limits.MaxRequestBodySize = 524_288_000;
 });
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 52_428_800; // 50 MB
+    options.MultipartBodyLengthLimit = 524_288_000; // 500 MB
     options.ValueLengthLimit = 1_048_576;
     options.MultipartHeadersLengthLimit = 16_384;
 });
 
+// ── SHARED SERVICES ───────────────────────────────────────────
+builder.Services.AddSingleton<IClamClientFactory, DefaultClamClientFactory>();
+builder.Services.AddScoped<VirusScanService>();
+builder.Services.AddScoped<FileValidationService>();
+
+// Storage abstraction — swap for MinioStorageService later in one line
+builder.Services.AddScoped<IStorageService, LocalStorageService>();
+builder.Services.AddScoped<IFileRepository, FileRepository>();
+
+// ── DOCUMENT SERVICES ─────────────────────────────────────────
+builder.Services.AddScoped<IFileService, FileService>();
+
+// ── VIDEO SERVICES ────────────────────────────────────────────
+builder.Services.AddScoped<VideoValidationService>();
+builder.Services.AddSingleton<FfprobeService>();   // stateless — singleton is fine
+builder.Services.AddScoped<IVideoService, VideoService>();
+
+// ── BUILD ─────────────────────────────────────────────────────
 var app = builder.Build();
 
 app.UseSwagger();
@@ -95,22 +91,26 @@ app.UseSwaggerUI(options =>
 });
 
 app.UseMiddleware<CorrelationIdMiddleware>();
-app.UseMiddleware<GlobalExceptionMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 if (!app.Environment.IsDevelopment())
-{
     app.UseHttpsRedirection();
-}
 
 app.MapControllers();
 
-var uploadsPath = Path.Combine(
+// Ensure both storage folders exist at startup
+var docUploads = Path.Combine(
     Directory.GetCurrentDirectory(),
     builder.Configuration["FileStorage:BasePath"] ?? "uploads"
 );
-Directory.CreateDirectory(uploadsPath);
+var videoUploads = Path.Combine(
+    Directory.GetCurrentDirectory(),
+    builder.Configuration["VideoStorage:BasePath"] ?? "uploads/videos"
+);
+Directory.CreateDirectory(docUploads);
+Directory.CreateDirectory(videoUploads);
 
 app.Run();
 
-public partial class Program { } // for xunit integration testing
+public partial class Program { }

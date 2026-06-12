@@ -80,8 +80,8 @@ C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUplo
 C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\ref\FileUploadService.dll
 C:\Users\harsh.gupta\Downloads\FileUploadService_Main\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\bin\Debug\net8.0\appsettings.Development.json
-C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.staticwebassets.endpoints.json
 C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\bin\Debug\net8.0\appsettings.json
+C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.staticwebassets.endpoints.json
 C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.exe
 C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.deps.json
 C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\bin\Debug\net8.0\FileUploadService.runtimeconfig.json
@@ -114,7 +114,6 @@ C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\obj\Debug\net8.
 C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\obj\Debug\net8.0\swae.build.ex.cache
-C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUplo.B76124C8.Up2Date
 C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\obj\Debug\net8.0\FileUploadService.dll
 C:\Users\harsh.gupta\Desktop\FileUploadService\FileUploadService\obj\Debug\net8.0\refint\FileUploadService.dll

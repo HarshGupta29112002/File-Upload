@@ -1,3 +1,23 @@
+CREATE TABLE IF NOT EXISTS video_metadata (
+    id               BIGSERIAL     PRIMARY KEY,
+    file_id          BIGINT        NOT NULL REFERENCES files(id) ON DELETE CASCADE,
+    reference_id     VARCHAR(32)   NOT NULL UNIQUE,
+    duration_seconds NUMERIC(10,3),
+    width            INT,
+    height           INT,
+    video_codec      VARCHAR(32),
+    audio_codec      VARCHAR(32),
+    frame_rate       VARCHAR(16),
+    bit_rate         BIGINT,
+    created_at       TIMESTAMPTZ   NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_video_metadata_reference ON video_metadata(reference_id);
+CREATE INDEX IF NOT EXISTS idx_video_metadata_file_id   ON video_metadata(file_id);
+
+SELECT * FROM video_metadata;
+
+
 -- ============================================================
 --  TABLE: microservices
 --  Represents the calling service/client that uploaded a file.
@@ -62,6 +82,7 @@ ALTER TABLE files DROP COLUMN IF EXISTS is_encrypted;
 UPDATE files SET iv = '' WHERE iv IS NULL;
 ALTER TABLE files ALTER COLUMN iv SET NOT NULL;
 
+ALTER TABLE files ALTER COLUMN iv DROP NOT NULL;
 
 -- ============================================================
 --  USEFUL QUERIES

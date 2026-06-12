@@ -6,6 +6,9 @@ public class FileValidationResult
 
     public string? FailureReason { get; set; }
 
+    public static FileValidationResult Ok() => new() { IsValid = true };
+    public static FileValidationResult Fail(string r) => new() { IsValid = false, FailureReason = r };
+
     public ValidationDetails Details { get; set; } = new();
 }
 

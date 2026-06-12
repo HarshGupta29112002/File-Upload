@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FileUploadService.XunitTesting")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+49145d8560edd3774e11b642fe509bf158095c29")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+383f39e5f48ba5ba0dcc8f20c3df6b08b23abcb6")]
 [assembly: System.Reflection.AssemblyProductAttribute("FileUploadService.XunitTesting")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FileUploadService.XunitTesting")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

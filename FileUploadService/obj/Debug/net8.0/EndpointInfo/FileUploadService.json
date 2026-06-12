@@ -2,7 +2,6 @@
   "openapi": "3.0.4",
   "info": {
     "title": "File Upload Microservice",
-    "description": "A minimal microservice for uploading and downloading files.",
     "version": "v1"
   },
   "paths": {
@@ -42,13 +41,19 @@
             "description": "Created",
             "content": {
               "text/plain": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/FileUploadResponseApiResponse"
+                }
               },
               "application/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/FileUploadResponseApiResponse"
+                }
               },
               "text/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/FileUploadResponseApiResponse"
+                }
               }
             }
           },
@@ -56,13 +61,19 @@
             "description": "Bad Request",
             "content": {
               "text/plain": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               },
               "application/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               },
               "text/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               }
             }
           }
@@ -92,13 +103,19 @@
             "description": "Not Found",
             "content": {
               "text/plain": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               },
               "application/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               },
               "text/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               }
             }
           }
@@ -123,13 +140,19 @@
             "description": "OK",
             "content": {
               "text/plain": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               },
               "application/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               },
               "text/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               }
             }
           },
@@ -137,13 +160,19 @@
             "description": "Not Found",
             "content": {
               "text/plain": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               },
               "application/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               },
               "text/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               }
             }
           }
@@ -170,13 +199,19 @@
             "description": "OK",
             "content": {
               "text/plain": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectApiResponse"
+                }
               },
               "application/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectApiResponse"
+                }
               },
               "text/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectApiResponse"
+                }
               }
             }
           },
@@ -184,13 +219,139 @@
             "description": "Not Found",
             "content": {
               "text/plain": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               },
               "application/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               },
               "text/json": {
-                "schema": { }
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/videos/upload": {
+      "post": {
+        "tags": [
+          "Videos"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "File": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "UploadedBy": {
+                    "type": "string"
+                  }
+                }
+              },
+              "encoding": {
+                "File": {
+                  "style": "form"
+                },
+                "UploadedBy": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoUploadResponseApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoUploadResponseApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoUploadResponseApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/videos/{referenceId}": {
+      "get": {
+        "tags": [
+          "Videos"
+        ],
+        "parameters": [
+          {
+            "name": "referenceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "206": {
+            "description": "Partial Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
               }
             }
           }
@@ -198,10 +359,183 @@
       }
     }
   },
-  "components": { },
+  "components": {
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FileUploadResponse": {
+        "type": "object",
+        "properties": {
+          "referenceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "originalFilename": {
+            "type": "string",
+            "nullable": true
+          },
+          "contentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileSizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FileUploadResponseApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/FileUploadResponse"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ObjectApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "nullable": true
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VideoUploadResponse": {
+        "type": "object",
+        "properties": {
+          "referenceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "originalFilename": {
+            "type": "string",
+            "nullable": true
+          },
+          "contentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileSizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "durationSeconds": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "resolution": {
+            "type": "string",
+            "nullable": true
+          },
+          "videoCodec": {
+            "type": "string",
+            "nullable": true
+          },
+          "audioCodec": {
+            "type": "string",
+            "nullable": true
+          },
+          "frameRate": {
+            "type": "string",
+            "nullable": true
+          },
+          "bitRate": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VideoUploadResponseApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/VideoUploadResponse"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
   "tags": [
     {
       "name": "Files"
+    },
+    {
+      "name": "Videos"
     }
   ]
 }

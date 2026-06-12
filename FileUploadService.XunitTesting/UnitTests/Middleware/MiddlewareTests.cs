@@ -79,9 +79,9 @@ public class GlobalExceptionMiddlewareTests
         var context = MakeContext();
         var reached = false;
 
-        var sut = new GlobalExceptionMiddleware(
+        var sut = new ExceptionMiddleware(
             _ => { reached = true; return Task.CompletedTask; },
-            NullLogger<GlobalExceptionMiddleware>.Instance);
+            NullLogger<ExceptionMiddleware>.Instance);
 
         await sut.InvokeAsync(context);
 
@@ -99,9 +99,9 @@ public class GlobalExceptionMiddlewareTests
             Details = new ValidationDetails { ClaimedExtension = ".exe" }
         };
 
-        var sut = new GlobalExceptionMiddleware(
+        var sut = new ExceptionMiddleware(
             _ => throw new FileValidationException(result),
-            NullLogger<GlobalExceptionMiddleware>.Instance);
+            NullLogger<ExceptionMiddleware>.Instance);
 
         await sut.InvokeAsync(context);
 
@@ -113,9 +113,9 @@ public class GlobalExceptionMiddlewareTests
     {
         var context = MakeContext();
 
-        var sut = new GlobalExceptionMiddleware(
+        var sut = new ExceptionMiddleware(
             _ => throw new VirusDetectedException("Win.Test.EICAR_HDB-1"),
-            NullLogger<GlobalExceptionMiddleware>.Instance);
+            NullLogger<ExceptionMiddleware>.Instance);
 
         await sut.InvokeAsync(context);
 
@@ -127,9 +127,9 @@ public class GlobalExceptionMiddlewareTests
     {
         var context = MakeContext();
 
-        var sut = new GlobalExceptionMiddleware(
+        var sut = new ExceptionMiddleware(
             _ => throw new VirusScanException("ClamAV not responding"),
-            NullLogger<GlobalExceptionMiddleware>.Instance);
+            NullLogger<ExceptionMiddleware>.Instance);
 
         await sut.InvokeAsync(context);
 
@@ -141,9 +141,9 @@ public class GlobalExceptionMiddlewareTests
     {
         var context = MakeContext();
 
-        var sut = new GlobalExceptionMiddleware(
+        var sut = new ExceptionMiddleware(
             _ => throw new Exception("something went wrong"),
-            NullLogger<GlobalExceptionMiddleware>.Instance);
+            NullLogger<ExceptionMiddleware>.Instance);
 
         await sut.InvokeAsync(context);
 
@@ -155,9 +155,9 @@ public class GlobalExceptionMiddlewareTests
     {
         var context = MakeContext();
 
-        var sut = new GlobalExceptionMiddleware(
+        var sut = new ExceptionMiddleware(
             _ => throw new Exception("boom"),
-            NullLogger<GlobalExceptionMiddleware>.Instance);
+            NullLogger<ExceptionMiddleware>.Instance);
 
         await sut.InvokeAsync(context);
 
@@ -175,9 +175,9 @@ public class GlobalExceptionMiddlewareTests
             Details = new ValidationDetails()
         };
 
-        var sut = new GlobalExceptionMiddleware(
+        var sut = new ExceptionMiddleware(
             _ => throw new FileValidationException(result),
-            NullLogger<GlobalExceptionMiddleware>.Instance);
+            NullLogger<ExceptionMiddleware>.Instance);
 
         await sut.InvokeAsync(context);
 
